@@ -5,6 +5,35 @@ from torchvision.transforms import ToTensor, Resize, Compose
 from torch.utils.data import DataLoader
 from torch.utils.data import random_split
 from model import CRNN
+import itertools
+import numpy as np
+
+def words_from_labels(labels, char_list):
+    """
+    converts the list of encoded integer labels to word strings like eg. [12,10,29] returns CAT 
+    """
+    txt=[]
+    for ele in labels:
+        if ele == 0: # CTC blank space
+            txt.append("")
+        else:
+            #print(letters[ele])
+            txt.append(char_list[ele]+1)
+    return "".join(txt)
+
+def decode_batch(test_func, word_batch): #take only a sequence once a time
+    """
+    Takes the Batch of Predictions and decodes the Predictions by Best Path Decoding and Returns the Output
+    """
+    out = test_func([word_batch])[0] #returns the predicted output matrix of the model
+    ret = []
+    for j in range(out.shape[0]):
+        out_best = list(np.argmax(out[j, :], 1))
+        out_best = [k for k, g in itertools.groupby(out_best)]
+        outstr = words_from_labels(out_best)
+        ret.append(outstr)
+    return ret
+
 
 if __name__ == '__main__':
     num_epochs = 100
@@ -40,6 +69,7 @@ if __name__ == '__main__':
     char_list = dataset.char_list
     model = CRNN(num_classes=len(char_list)+1)
     criterion = nn.CTCLoss(blank=0)
+    output_lengths = torch.full(size=(batch_size,), fill_value=max_label_len, dtype=torch.long)
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
     num_iters = len(train_dataloader)
     if torch.cuda.is_available():
@@ -49,25 +79,27 @@ if __name__ == '__main__':
         for iter, (images, padded_labels, label_lenghts) in enumerate(train_dataloader):
             if torch.cuda.is_available():
                 images = images.cuda()
-                labels = labels.cuda()
+                padded_labels = padded_labels.cuda()
             outputs = model(images)
-            outputs = outputs.permute(1,0,2)
             #output(sequence_length, batch_size, num_classes)
             #padded_labels(batch_size, max_label_len)
             #output_lengths, label_lenghts(batch_size)
-            output_lengths = torch.full(size=(batch_size,), fill_value=max_label_len, dtype=torch.long)
             loss_value = criterion(outputs, padded_labels, output_lengths, label_lenghts)
             optimizer.zero_grad()
             loss_value.backward()
             optimizer.step()
-            if iter+1%10:
+            if (iter+1)%10:
                 print("Epoch {}/{}. Iteration {}/{}. Loss{}".format(epoch+1,num_epochs, iter+1, num_iters, loss_value))
-                
-        # model.eval()
-        # all_predictions=[]
-        # all_labels=[]
 
+        model.eval()
+        for iter, (images, padded_labels) in enumerate(val_dataloader):
+            if torch.cuda.is_available():
+                images = images.cuda()
+                padded_labels = padded_labels.cuda()
 
-
+            with torch.no_grad():
+                predictions = model(images)  
+                loss_value = criterion(predictions, padded_labels, output_lengths, label_lenghts)          
+            
 
 

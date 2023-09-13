@@ -71,14 +71,15 @@ class CRNN(nn.Module):
         x = self.conv7(x)
         
         #CNN to RNN
-        x = x.permute(0, 2, 1, 3)  # swap height and width dimensions
-        x = x.reshape(x.shape[0], 16, -1)  # reshape (batch_size, seq_length, num_channels * height) # 16 = max_label_len
+        # x = x.permute(0, 2, 1, 3)  # swap height and width dimensions
+        x = x.reshape(x.shape[0], 16, -1)  # reshape (batch_size, seq_length, -1) # 16 = time_steps
         x = self.fc1(x)
        
         x = self.rnn1(x)[0]
         x = self.rnn2(x)[0]
         x = self.fc2(x)
         x = self.softmax(x)
+        x = x.permute(1,0,2)
         return x
     
 if __name__ == '__main__':    
