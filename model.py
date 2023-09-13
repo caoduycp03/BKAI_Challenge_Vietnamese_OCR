@@ -3,8 +3,9 @@ import torch.nn as nn
 from torchsummary import summary
 
 class CRNN(nn.Module):
-    def __init__(self, num_classes, drop_out_rate = 0.35):
+    def __init__(self, time_steps, num_classes, drop_out_rate = 0.35):
         super().__init__()
+        self.time_steps = time_steps
         #CNN
         self.conv1 = nn.Sequential(
         nn.Conv2d(in_channels=1, out_channels=64, kernel_size=3, padding='same', bias=True),
@@ -71,8 +72,7 @@ class CRNN(nn.Module):
         x = self.conv7(x)
         
         #CNN to RNN
-        # x = x.permute(0, 2, 1, 3)  # swap height and width dimensions
-        x = x.reshape(x.shape[0], 16, -1)  # reshape (batch_size, seq_length, -1) # 16 = time_steps
+        x = x.reshape(x.shape[0], self.time_steps, -1)  # reshape (batch_size, seq_length, -1) # 16 = time_steps
         x = self.fc1(x)
        
         x = self.rnn1(x)[0]
@@ -85,7 +85,7 @@ class CRNN(nn.Module):
 if __name__ == '__main__':    
     input_data = torch.rand(8, 1, 64, 128)
     
-    model = CRNN(num_classes=188)
+    model = CRNN(num_classes=188).cuda()
     if torch.cuda.is_available():
         input_data = input_data.cuda()
     while True:

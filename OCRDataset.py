@@ -77,7 +77,7 @@ if __name__ == '__main__':
     )
     
     ocr = OCRDataset(root = "data", train=True, transform=transform)
-    image, label = ocr.__getitem__(100)
+    image, label = ocr.__getitem__(1)
     print(image.shape)
     print(label)
 
