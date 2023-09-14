@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.init as init
 from torchsummary import summary
 
 class CRNN(nn.Module):
@@ -61,6 +62,16 @@ class CRNN(nn.Module):
         self.fc2 = nn.Linear(512, num_classes)
         #Softmax
         self.softmax = nn.LogSoftmax(dim=2)
+        
+        #He/Kaming weight initialization
+        self._init_weights()
+
+    def _init_weights(self):
+        for module in self.modules():
+            if isinstance(module, (nn.Conv2d, nn.Linear)):
+                init.kaiming_uniform_(module.weight)
+                if module.bias is not None:
+                    init.zeros_(module.bias)
 
     def forward(self,x):
         x = self.conv1(x)
@@ -72,6 +83,7 @@ class CRNN(nn.Module):
         x = self.conv7(x)
         
         #CNN to RNN
+        x = x.permute(0, 3, 1, 2)
         x = x.reshape(x.shape[0], self.time_steps, -1)  # reshape (batch_size, seq_length, -1) # 16 = time_steps
         x = self.fc1(x)
        
