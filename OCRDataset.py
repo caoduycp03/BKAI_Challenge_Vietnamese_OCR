@@ -48,7 +48,7 @@ class OCRDataset(Dataset):
             image = self.transform(image)
         if self.train:
             label = self.labels[idx]
-            max_seq_len = 20
+            max_seq_len = 32
             padded_label = np.squeeze(pad_sequences([label], maxlen=max_seq_len, padding='post', value = 0))
             return image, padded_label, len(label)
         else:
@@ -77,10 +77,15 @@ if __name__ == '__main__':
     )
     
     ocr = OCRDataset(root = "data", train=True, transform=transform)
-    image, label = ocr.__getitem__(1)
-    print(image.shape)
-    print(label)
-
+    # image, label, length = ocr.__getitem__(1)
+    # print(image.shape)
+    # print(label)
+    max_len = 0
+    for i in ocr.labels:
+        if len(i) > max_len:
+            max_len = len(i)
+    print(max_len)
+    
 
     # height = []
     # width = []
@@ -93,6 +98,6 @@ if __name__ == '__main__':
     # print(np.mean(width)) #131.1066213592233 => 128
 
 
-    for images, labels in train_dataloader:
-        print(images.shape)
-        print(labels.shape)
+    # for images, labels in train_dataloader:
+    #     print(images.shape)
+    #     print(labels.shape)

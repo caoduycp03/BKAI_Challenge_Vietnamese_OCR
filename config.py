@@ -10,7 +10,7 @@ class ModelConfigs(BaseModelConfigs):
         self.root = 'data'
         self.height = 64
         self.width = 128
-        self.max_label_len = 16
+        self.max_label_len = 32
         self.epochs = 100        
         self.batch_size = 8
         self.learning_rate = 1e-3

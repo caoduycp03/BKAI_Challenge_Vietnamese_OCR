@@ -64,7 +64,7 @@ if __name__ == '__main__':
     transform = Compose([
         Resize((height,width)),
         ToTensor(),
-        ])
+         ])
     
     #split train/val dataset
     dataset = OCRDataset(root = root, train=True, transform=transform)  # Replace with your dataset
@@ -122,8 +122,9 @@ if __name__ == '__main__':
             #padded_labels(batch_size, max_label_len)
             #output_lengths, label_lenghts(batch_size)
             loss_value = criterion(outputs, padded_labels, output_lengths, label_lenghts)
-            if torch.isinf(loss_value) or torch.isnan(loss_value):
-                print(outputs, padded_labels)
+            if torch.isinf(loss_value):
+                print(outputs)
+                exit()
             progress_bar.set_description("Epoch {}/{}. Iteration {}/{}. Loss{:3f}".format(epoch+1, num_epochs, iter+1, num_iters, loss_value))
             writer.add_scalar("Train/Loss", loss_value, epoch*num_iters+iter)
             #backward
@@ -132,7 +133,7 @@ if __name__ == '__main__':
             optimizer.step()
 
         model.eval()
-        for iter, (images, padded_labels) in enumerate(val_dataloader):
+        for iter, (images, padded_labels, label_lenghts) in enumerate(val_dataloader):
             images = images.to(device)
             padded_labels = padded_labels.to(device)
             with torch.no_grad():

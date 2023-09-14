@@ -51,7 +51,7 @@ class CRNN(nn.Module):
         )
 
         self.fc1 = nn.Sequential(
-        nn.Linear(4096, 512),
+        nn.Linear(2048, 512),
         nn.ReLU())
 
         #RNN
@@ -85,7 +85,7 @@ class CRNN(nn.Module):
 if __name__ == '__main__':    
     input_data = torch.rand(8, 1, 64, 128)
     
-    model = CRNN(num_classes=188).cuda()
+    model = CRNN(time_steps=32, num_classes=188).cuda()
     if torch.cuda.is_available():
         input_data = input_data.cuda()
     while True:
