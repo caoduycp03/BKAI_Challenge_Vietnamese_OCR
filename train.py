@@ -2,7 +2,7 @@ import os
 import torch
 import torch.nn as nn
 from OCRDataset import OCRDataset
-from torchvision.transforms import ToTensor, Resize, Compose
+from torchvision.transforms import ToTensor, Resize, Compose, RandomAffine, ColorJitter
 from torch.utils.data import DataLoader
 from torch.utils.data import random_split
 from model import CRNN
@@ -66,6 +66,16 @@ if __name__ == '__main__':
         ToTensor(),
          ])
     
+    augment_transform= Compose([RandomAffine(
+                                            degrees=(-5, 5),
+                                            scale=(0.5, 1.05), 
+                                            shear=10),
+                                ColorJitter(
+                                            brightness=0.5, 
+                                            contrast=0.5,
+                                            saturation=0.5,
+                                            hue=0.5)])
+
     #split train/val dataset
     dataset = OCRDataset(root = root, train=True, transform=transform)  # Replace with your dataset
     train_size = int(0.9 * len(dataset))
@@ -114,6 +124,7 @@ if __name__ == '__main__':
         model.train()
         progress_bar = tqdm(train_dataloader, colour="green")
         for iter, (images, padded_labels, label_lenghts) in enumerate(train_dataloader):
+            images = augment_transform(images)
             images = images.to(device)
             padded_labels = padded_labels.to(device)
             #forward
