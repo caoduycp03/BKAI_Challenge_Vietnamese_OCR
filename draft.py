@@ -19,54 +19,56 @@ import torch
 
 
 
-from config import ModelConfigs
+# from config import ModelConfigs
 
-configs = ModelConfigs()
-print(configs.learning_rate)
-def accuracies(actual_labels,predicted_labels):
-    """
-    Takes a List of Actual Outputs, predicted Outputs and returns their accuracy and letter accuracy across
-    all the labels in the list
-    """
-    accuracy=0
-    letter_acc=0
-    letter_cnt=0
-    count=0
-    for i in range(len(actual_labels)):
-        predicted_output=predicted_labels[i]
-        actual_output=actual_labels[i]
-        count+=1
-        for j in range(min(len(predicted_output),len(actual_output))):
-            if predicted_output[j]==actual_output[j]:
-                letter_acc+=1
-        letter_cnt+=max(len(predicted_output),len(actual_output))
-        if actual_output==predicted_output:
-            accuracy+=1
-    final_accuracy=np.round((accuracy/len(actual_labels))*100,2)
-    final_letter_acc=np.round((letter_acc/letter_cnt)*100,2)
-    return final_accuracy,final_letter_acc
+# configs = ModelConfigs()
+# print(configs.learning_rate)
+# def accuracies(actual_labels,predicted_labels):
+#     """
+#     Takes a List of Actual Outputs, predicted Outputs and returns their accuracy and letter accuracy across
+#     all the labels in the list
+#     """
+#     accuracy=0
+#     letter_acc=0
+#     letter_cnt=0
+#     count=0
+#     for i in range(len(actual_labels)):
+#         predicted_output=predicted_labels[i]
+#         actual_output=actual_labels[i]
+#         count+=1
+#         for j in range(min(len(predicted_output),len(actual_output))):
+#             if predicted_output[j]==actual_output[j]:
+#                 letter_acc+=1
+#         letter_cnt+=max(len(predicted_output),len(actual_output))
+#         if actual_output==predicted_output:
+#             accuracy+=1
+#     final_accuracy=np.round((accuracy/len(actual_labels))*100,2)
+#     final_letter_acc=np.round((letter_acc/letter_cnt)*100,2)
+#     return final_accuracy,final_letter_acc
             
-def show_accuracy_metrics(self,num_batches, is_train):
-        """
-        Calculates the accuracy and letter accuracy for each batch of inputs, 
-        and prints the avarage accuracy and letter accuracy across all the batches
-        """
-        accuracy=0
-        letter_accuracy=0
-        batches_cnt=num_batches
-        while batches_cnt>0:
-            word_batch = next(self.text_img_gen)[0]   #Gets the next batch from the Data generator
-            decoded_res = decode_batch(self.test_func,word_batch['img_input'])
-            actual_res=word_batch['source_str']
-            acc,let_acc=accuracies(actual_res,decoded_res,self.is_train)
-            accuracy+=acc
-            letter_accuracy+=let_acc
-            batches_cnt-=1
-        accuracy=accuracy/num_batches
-        letter_accuracy=letter_accuracy/num_batches
-        if is_train:
-            print("Train Average Accuracy of "+str(num_batches)+" Batches: ",np.round(accuracy,2)," %")
-            print("Train Average Letter Accuracy of "+str(num_batches)+" Batches: ",np.round(letter_accuracy,2)," %")
-        else:
-            print("Validation Average Accuracy of "+str(num_batches)+" Batches: ",np.round(accuracy,2)," %")
-            print("Validation Average Letter Accuracy of "+str(num_batches)+" Batches: ",np.round(letter_accuracy,2)," %")
+# def show_accuracy_metrics(self,num_batches, is_train):
+#         """
+#         Calculates the accuracy and letter accuracy for each batch of inputs, 
+#         and prints the avarage accuracy and letter accuracy across all the batches
+#         """
+#         accuracy=0
+#         letter_accuracy=0
+#         batches_cnt=num_batches
+#         while batches_cnt>0:
+#             word_batch = next(self.text_img_gen)[0]   #Gets the next batch from the Data generator
+#             decoded_res = decode_batch(self.test_func,word_batch['img_input'])
+#             actual_res=word_batch['source_str']
+#             acc,let_acc=accuracies(actual_res,decoded_res,self.is_train)
+#             accuracy+=acc
+#             letter_accuracy+=let_acc
+#             batches_cnt-=1
+#         accuracy=accuracy/num_batches
+#         letter_accuracy=letter_accuracy/num_batches
+#         if is_train:
+#             print("Train Average Accuracy of "+str(num_batches)+" Batches: ",np.round(accuracy,2)," %")
+#             print("Train Average Letter Accuracy of "+str(num_batches)+" Batches: ",np.round(letter_accuracy,2)," %")
+#         else:
+#             print("Validation Average Accuracy of "+str(num_batches)+" Batches: ",np.round(accuracy,2)," %")
+#             print("Validation Average Letter Accuracy of "+str(num_batches)+" Batches: ",np.round(letter_accuracy,2)," %")
+
+
