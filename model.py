@@ -4,9 +4,9 @@ import torch.nn.init as init
 from torchsummary import summary
 
 class CRNN(nn.Module):
-    def __init__(self, time_steps, num_classes, drop_out_rate = 0.35):
+    def __init__(self, num_classes, drop_out_rate = 0.35):
         super().__init__()
-        self.time_steps = time_steps
+
         #CNN
         self.conv1 = nn.Sequential(
         nn.Conv2d(in_channels=1, out_channels=64, kernel_size=3, padding='same', bias=True),
@@ -18,7 +18,7 @@ class CRNN(nn.Module):
         nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, padding='same', bias=True),
         nn.BatchNorm2d(num_features=128),
         nn.ReLU(),
-        nn.MaxPool2d(kernel_size=2, stride=(2,2))
+        nn.MaxPool2d(kernel_size=(1,2), stride=(1,2))
         )
         self.conv3 = nn.Sequential(
         nn.Conv2d(in_channels=128, out_channels=256, kernel_size=3, padding='same', bias=True),
@@ -52,12 +52,12 @@ class CRNN(nn.Module):
         )
 
         self.fc1 = nn.Sequential(
-        nn.Linear(2048, 512),
+        nn.Linear(4096, 256),
         nn.ReLU())
 
         #RNN
-        self.rnn1 = nn.LSTM(input_size=512, hidden_size=256, bidirectional=True, batch_first=True)
-        self.rnn2 = nn.LSTM(input_size=512, hidden_size=256, bidirectional=True, batch_first=True)
+        self.rnn1 = nn.LSTM(input_size=256, hidden_size=128, bidirectional=True, batch_first=True)
+        self.rnn2 = nn.LSTM(input_size=256, hidden_size=256, bidirectional=True, batch_first=True)
         #FC
         self.fc2 = nn.Linear(512, num_classes)
         #Softmax
@@ -82,22 +82,21 @@ class CRNN(nn.Module):
         x = self.conv6(x)
         x = self.conv7(x)
         
-        #CNN to RNN
-        x = x.permute(0, 3, 1, 2)
-        x = x.reshape(x.shape[0], self.time_steps, -1)  # reshape (batch_size, seq_length, -1) # 16 = time_steps
+        # CNN to RNN
+        x = x.permute(2, 0, 1, 3)
+        x = x.reshape(32, 8, -1)
         x = self.fc1(x)
-       
+
         x = self.rnn1(x)[0]
         x = self.rnn2(x)[0]
         x = self.fc2(x)
         x = self.softmax(x)
-        x = x.permute(1,0,2)
         return x
     
 if __name__ == '__main__':    
     input_data = torch.rand(8, 1, 64, 128)
     
-    model = CRNN(time_steps=32, num_classes=188).cuda()
+    model = CRNN(num_classes=188).cuda()
     if torch.cuda.is_available():
         input_data = input_data.cuda()
     while True:

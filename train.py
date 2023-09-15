@@ -53,6 +53,7 @@ if __name__ == '__main__':
     root = configs.root
     num_epochs = configs.epochs
     batch_size = configs.batch_size
+    train_workers = configs.train_workers
     max_label_len = configs.max_label_len
     height = configs.height
     width = configs.width
@@ -77,7 +78,7 @@ if __name__ == '__main__':
                                             hue=0.5)])
 
     #split train/val dataset
-    dataset = OCRDataset(root = root, train=True, transform=transform)  # Replace with your dataset
+    dataset = OCRDataset(root = root, max_label_len = max_label_len, train=True, transform=transform)
     train_size = int(0.9 * len(dataset))
     val_size = len(dataset) - train_size
     train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
@@ -85,7 +86,7 @@ if __name__ == '__main__':
     train_dataloader = DataLoader(
         dataset=train_dataset,
         batch_size=batch_size,
-        num_workers=4,
+        num_workers=train_workers,
         drop_last=True,
         shuffle=True
     )
@@ -93,7 +94,7 @@ if __name__ == '__main__':
     val_dataloader = DataLoader(
         dataset=val_dataset,
         batch_size=batch_size,
-        num_workers=4,
+        num_workers=train_workers,
         drop_last=True,
         shuffle=True
     )
@@ -105,9 +106,10 @@ if __name__ == '__main__':
     writer = SummaryWriter(logging)
 
     char_list = dataset.char_list
-    model = CRNN(time_steps=max_label_len, num_classes=len(char_list)+1).to(device)
+    model = CRNN(num_classes=len(char_list)+1).to(device)
     criterion = nn.CTCLoss(blank=0)
-    output_lengths = torch.full(size=(batch_size,), fill_value=max_label_len, dtype=torch.long)
+    time_steps = max_label_len #time_steps(seq_len) must >= max_label_len but for simplicity, we use time_steps(seq_len) = max_label_len
+    output_lengths = torch.full(size=(batch_size,), fill_value=time_steps, dtype=torch.long)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     best_loss = 0
     if checkpoint:

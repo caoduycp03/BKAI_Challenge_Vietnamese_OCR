@@ -14,7 +14,9 @@ def encode_to_num(text, char_list):
     return encoded_label
 
 class OCRDataset(Dataset):
-    def __init__(self, root, train=True, transform=None):
+    def __init__(self, root, max_label_len, train=True, transform=None):
+        self.max_label_len = max_label_len
+
         self.train = train
         self.transform = transform
         if train:
@@ -48,8 +50,7 @@ class OCRDataset(Dataset):
             image = self.transform(image)
         if self.train:
             label = self.labels[idx]
-            max_seq_len = 32
-            padded_label = np.squeeze(pad_sequences([label], maxlen=max_seq_len, padding='post', value = 0))
+            padded_label = np.squeeze(pad_sequences([label], maxlen=self.max_label_len, padding='post', value = 0))
             return image, padded_label, len(label)
         else:
             return image
@@ -61,20 +62,20 @@ if __name__ == '__main__':
         ToTensor(),
         ])
 
-    train_dataloader = DataLoader(
-        dataset=OCRDataset(root = "data", train=True, transform=transform),
-        batch_size=8,
-        num_workers=4,
-        drop_last=True,
-        shuffle=True
-    )
-    test_dataloader = DataLoader(
-        dataset=OCRDataset(root = "data", train=False, transform=transform),
-        batch_size=8,
-        num_workers=4,
-        drop_last=True,
-        shuffle=True
-    )
+    # train_dataloader = DataLoader(
+    #     dataset=OCRDataset(root = "data", train=True, transform=transform),
+    #     batch_size=8,
+    #     num_workers=4,
+    #     drop_last=True,
+    #     shuffle=True
+    # )
+    # test_dataloader = DataLoader(
+    #     dataset=OCRDataset(root = "data", train=False, transform=transform),
+    #     batch_size=8,
+    #     num_workers=4,
+    #     drop_last=True,
+    #     shuffle=True
+    # )
     
     ocr = OCRDataset(root = "data", train=True, transform=transform)
     # image, label, length = ocr.__getitem__(1)
@@ -85,6 +86,7 @@ if __name__ == '__main__':
         if len(i) > max_len:
             max_len = len(i)
     print(max_len)
+    # print(ocr.char_list.index('-'))
     
 
     # height = []
