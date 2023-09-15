@@ -15,6 +15,40 @@ from torch.utils.tensorboard import SummaryWriter
 import shutil
 import warnings
 warnings.simplefilter("ignore")
+import torch
+
+def save_checkpoint(model, optimizer, epoch, val_loss, checkpoint_path='checkpoint.pth'):
+    checkpoint = {
+        'epoch': epoch,
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'val_loss': val_loss,
+    }
+    torch.save(checkpoint, checkpoint_path)
+
+# Usage during training loop:
+# After evaluating validation loss
+# save_checkpoint(model, optimizer, epoch, val_loss, 'checkpoint.pth')
+
+class EarlyStopping:
+    def __init__(self, patience=20, min_delta=1e-8, restore_best_weights=True):
+        self.patience = patience
+        self.min_delta = min_delta
+        self.restore_best_weights = restore_best_weights
+        self.counter = 0
+        self.best_loss = None
+        self.early_stop = False
+
+    def __call__(self, val_loss):
+        if self.best_loss is None:
+            self.best_loss = val_loss
+        elif val_loss < self.best_loss - self.min_delta:
+            self.best_loss = val_loss
+            self.counter = 0
+        else:
+            self.counter += 1
+            if self.counter >= self.patience:
+                self.early_stop = True
 
 def words_from_labels(labels, char_list):
     """
