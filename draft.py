@@ -1,20 +1,37 @@
+# import torch
+# import torch.nn as nn
+# # Target are to be padded
+# T = 50      # Input sequence length
+# C = 20      # Number of classes (including blank)
+# N = 16      # Batch size
+# S = 30      # Target sequence length of longest target in batch (padding length)
+# S_min = 10  # Minimum target length, for demonstration purposes
+# # Initialize random batch of input vectors, for *size = (T,N,C)
+# input = torch.randn(T, N, C).log_softmax(2).detach().requires_grad_()
+# # Initialize random batch of targets (0 = blank, 1:C = classes)
+# target = torch.randint(low=1, high=C, size=(N, S), dtype=torch.long)
+# input_lengths = torch.full(size=(N,), fill_value=T, dtype=torch.long)
+# target_lengths = torch.randint(low=S_min, high=S, size=(N,), dtype=torch.long)
+# ctc_loss = nn.CTCLoss()
+# loss = ctc_loss(input, target, input_lengths, target_lengths)
+# print(target)
+
 import torch
 import torch.nn as nn
-# Target are to be padded
-T = 50      # Input sequence length
-C = 20      # Number of classes (including blank)
-N = 16      # Batch size
-S = 30      # Target sequence length of longest target in batch (padding length)
-S_min = 10  # Minimum target length, for demonstration purposes
-# Initialize random batch of input vectors, for *size = (T,N,C)
-input = torch.randn(T, N, C).log_softmax(2).detach().requires_grad_()
-# Initialize random batch of targets (0 = blank, 1:C = classes)
-target = torch.randint(low=1, high=C, size=(N, S), dtype=torch.long)
-input_lengths = torch.full(size=(N,), fill_value=T, dtype=torch.long)
-target_lengths = torch.randint(low=S_min, high=S, size=(N,), dtype=torch.long)
-ctc_loss = nn.CTCLoss()
-loss = ctc_loss(input, target, input_lengths, target_lengths)
-print(target_lengths)
+
+# Define the inputs and targets
+log_probs = torch.tensor([[[0.1, 0.3, 0.6], [0.2, 0.4, 0.4], [0.3, 0.5, 0.2]],
+                          [[0.4, 0.5, 0.1], [0.3, 0.2, 0.5], [0.2, 0.3, 0.5]]], dtype=torch.float32)  # (T, N, C)
+targets = torch.tensor([[1, 2], [2, 0]], dtype=torch.int32)  # (N, S)
+input_lengths = torch.tensor([3, 3], dtype=torch.int32)  # (N,)
+target_lengths = torch.tensor([2, 2], dtype=torch.int32)  # (N,)
+
+# # Create the CTC loss instance
+# ctc_loss = nn.CTCLoss()
+
+# # Compute the loss
+# loss = ctc_loss(log_probs, targets, input_lengths, target_lengths)
+print(log_probs.shape)
 
 
 

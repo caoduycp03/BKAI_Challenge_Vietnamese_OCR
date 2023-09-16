@@ -18,7 +18,7 @@ class CRNN(nn.Module):
         nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, padding='same', bias=True),
         nn.BatchNorm2d(num_features=128),
         nn.ReLU(),
-        nn.MaxPool2d(kernel_size=(1,2), stride=(1,2))
+        nn.MaxPool2d(kernel_size=2, stride=(2,2))
         )
         self.conv3 = nn.Sequential(
         nn.Conv2d(in_channels=128, out_channels=256, kernel_size=3, padding='same', bias=True),
@@ -30,7 +30,7 @@ class CRNN(nn.Module):
         nn.Dropout(drop_out_rate),
         nn.BatchNorm2d(num_features=256),
         nn.ReLU(),
-        nn.MaxPool2d(kernel_size=(1,2), stride=(1,2))
+        nn.MaxPool2d(kernel_size=(2,1), stride=(2,1))
         )
         self.conv5 = nn.Sequential(
         nn.Conv2d(in_channels=256, out_channels=512, kernel_size=3, padding='same', bias=True),
@@ -42,7 +42,7 @@ class CRNN(nn.Module):
         nn.Dropout(drop_out_rate),
         nn.BatchNorm2d(num_features=512),
         nn.ReLU(),
-        nn.MaxPool2d(kernel_size=(1,2), stride=(1,2))     
+        nn.MaxPool2d(kernel_size=(2,1), stride=(2,1))     
         )   
         self.conv7 = nn.Sequential(
         nn.Conv2d(in_channels=512, out_channels=512, kernel_size=2, padding='same', bias=True),
@@ -52,11 +52,11 @@ class CRNN(nn.Module):
         )
 
         self.fc1 = nn.Sequential(
-        nn.Linear(4096, 256),
+        nn.Linear(2048, 128),
         nn.ReLU())
 
         #RNN
-        self.rnn1 = nn.LSTM(input_size=256, hidden_size=128, bidirectional=True, batch_first=True)
+        self.rnn1 = nn.LSTM(input_size=128, hidden_size=128, bidirectional=True, batch_first=True) 
         self.rnn2 = nn.LSTM(input_size=256, hidden_size=256, bidirectional=True, batch_first=True)
         #FC
         self.fc2 = nn.Linear(512, num_classes)
@@ -81,9 +81,11 @@ class CRNN(nn.Module):
         x = self.conv5(x)
         x = self.conv6(x)
         x = self.conv7(x)
+        #output of cnn layer has shape (batchsize, channel, height, width)
         
+        # input to an LSTM layer in PyTorch has shape (sequence_length, batch_size, input_size) and width should be sq_len (chữ cái thường dễ nhận diện hơn khi chia dọc từng đoạn hơn là chia ngang)
         # CNN to RNN
-        x = x.permute(2, 0, 1, 3)
+        x = x.permute(3, 0, 1, 2)
         x = x.reshape(32, 8, -1)
         x = self.fc1(x)
 

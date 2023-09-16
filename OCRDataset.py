@@ -10,7 +10,7 @@ from PIL import Image
 def encode_to_num(text, char_list):
     encoded_label = []
     for char in text:
-        encoded_label.append(char_list.index(char)+1)
+        encoded_label.append(char_list.index(char))
     return encoded_label
 
 class OCRDataset(Dataset):
@@ -77,15 +77,17 @@ if __name__ == '__main__':
     #     shuffle=True
     # )
     
-    ocr = OCRDataset(root = "data", train=True, transform=transform)
-    # image, label, length = ocr.__getitem__(1)
-    # print(image.shape)
-    # print(label)
-    max_len = 0
-    for i in ocr.labels:
-        if len(i) > max_len:
-            max_len = len(i)
-    print(max_len)
+    ocr = OCRDataset(root = "data", max_label_len=32, train=True, transform=transform)
+    # print(len(ocr.char_list))
+    image, label, length = ocr.__getitem__(447)
+    print(image.shape)
+    print(label)
+    print(length)
+    # max_len = 0
+    # for i in ocr.labels:
+    #     if len(i) > max_len:
+    #         max_len = len(i)
+    # print(max_len)
     # print(ocr.char_list.index('-'))
     
 
