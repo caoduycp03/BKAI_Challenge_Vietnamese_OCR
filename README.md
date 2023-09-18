@@ -18,5 +18,7 @@ DATASET:
       └── two_characters (UNKNOWN)
 
 <p>[handwriting] (https://www.kaggle.com/datasets/phmnhnguyt/handwriting)</p>
+<a href = "https://www.kaggle.com/datasets/phmnhnguyt/handwriting"> handwriting </a>
 <p></p>[handwritten-ocr] (https://www.kaggle.com/datasets/ldmkstn/handwritten-ocr)</p>
+<a href = "https://www.kaggle.com/datasets/ldmkstn/handwritten-ocr"> handwritten-ocr </a>
 
