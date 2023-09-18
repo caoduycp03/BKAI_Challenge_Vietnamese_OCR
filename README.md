@@ -1,7 +1,7 @@
 # BKAI-Challenge-Vietnamese-OCR
 BKAI-NAVER 2023 - Track 2: OCR
 ### All of files in this branch is fitted with Kaggle Environment
-DATASET: 
+### DATASET: 
 
       ./kaggle/input/
       ├── handwriting
@@ -17,6 +17,5 @@ DATASET:
       │ └── new_train (TRAIN DATASET)
       └── two_characters (UNKNOWN)
 
-[handwriting] (https://www.kaggle.com/datasets/phmnhnguyt/handwriting/)
-[handwritten-ocr] (https://www.kaggle.com/datasets/ldmkstn/handwritten-ocr/)
-
+#### [handwriting](https://www.kaggle.com/datasets/phmnhnguyt/handwriting/)
+#### [handwritten-ocr](https://www.kaggle.com/datasets/ldmkstn/handwritten-ocr/)
