@@ -7,12 +7,12 @@ import numpy as np
 from PIL import Image
 
 
-train_folder_path = '/kaggle/input/handwritten-ocr/training_data/new_train' 
-test_folder_path = '/kaggle/input/handwritten-ocr/public_test_data/new_public_test'
-label_file_path = '/kaggle/input/handwriting/train_gt.txt'
+train_folder_path = '/training_data/new_train/' 
+test_folder_path = '/public_test_data/new_public_test/'
+label_file_path = '/kaggle/input/handwriting/train_gt.txt/train_gt.txt'
 root = '/kaggle/input/handwritten-ocr'
 
-
+# Encode text to number
 def encode_to_num(text, char_list):
     encoded_label = []
     for char in text:
@@ -22,17 +22,21 @@ def encode_to_num(text, char_list):
 class OCRDataset(Dataset):
     def __init__(self, root, max_label_len, train=True, transform=None):
         self.max_label_len = max_label_len
-
         self.train = train
         self.transform = transform
-        if train:
-            dir = os.path.join(root, train_folder_path)
+        if train: # result == list of path of train image file
+            dir = root + train_folder_path
             paths = os.listdir(dir)
+            # Sort the file names numerically
+            paths = sorted(paths, key=lambda x: int(x[10:-4]))
+            self.test = paths
+
             image_files = [os.path.join(dir, path) for path in paths]
             label_file = label_file_path
         else:
-            dir = os.path.join(root, test_folder_path)
+            dir = root + test_folder_path
             paths = os.listdir(dir)
+            paths = sorted(paths, key=lambda x: int(x[10:-4]))
             image_files = [os.path.join(dir, path) for path in paths]
         
         self.images_path = image_files
@@ -62,44 +66,15 @@ class OCRDataset(Dataset):
             return image
         
 
+if __name__ == '__main__':
+    transform = Compose([
+        Resize((64,128)),
+        ToTensor(),
+        ])
 
-transform = Compose([
-    Resize((64,128)),
-    ToTensor(),
-    ])
-
-    train_dataloader = DataLoader(
-        dataset=OCRDataset(root = "data", train=True, transform=transform),
-        batch_size=8,
-        num_workers=4,
-        drop_last=True,
-        shuffle=True
-    )
-    test_dataloader = DataLoader(
-        dataset=OCRDataset(root = "data", train=False, transform=transform),
-        batch_size=8,
-        num_workers=4,
-        drop_last=True,
-        shuffle=True
-    )
-    
-    ocr = OCRDataset(root = "data", train=True, transform=transform)
-    # image, label, length = ocr.__getitem__(1)
-    # print(image.shape)
-    # print(label)
-    max_len = 0
-    for i in ocr.labels:
-        if len(i) > max_len:
-            max_len = len(i)
-    print(max_len)
-    
-
-for images, labels, nothing in train_dataloader:
-    print(images)
-    print(labels)
-    print(nothing)
-    break
-
-for images, labels, nothing in train_dataloader:
-        print(images.shape)
-        break
+    ocr = OCRDataset(root = root, max_label_len=32, train=True, transform=transform)
+    # print(len(ocr.char_list))
+    image, label, length = ocr.__getitem__(447)
+    print(image.shape)
+    print(label)
+    print(length)
