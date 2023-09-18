@@ -17,7 +17,6 @@ DATASET:
       │ └── new_train (TRAIN DATASET)
       └── two_characters (UNKNOWN)
 
-<p>[handwriting] (https://www.kaggle.com/datasets/phmnhnguyt/handwriting)</p>
-<p></p>[handwritten-ocr] (https://www.kaggle.com/datasets/ldmkstn/handwritten-ocr)</p>
-`![Viblo logo](https://viblo.asia/img/logo-v2.png)`
+[handwriting] (https://www.kaggle.com/datasets/phmnhnguyt/handwriting/)
+[handwritten-ocr] (https://www.kaggle.com/datasets/ldmkstn/handwritten-ocr/)
 
