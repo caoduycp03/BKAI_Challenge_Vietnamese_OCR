@@ -4,13 +4,13 @@ BKAI-NAVER 2023 - Track 2: OCR
 DATASET:
 
       ./kaggle/input/
-      ├── handwriting "(https://www.kaggle.com/datasets/phmnhnguyt/handwriting)"
+      ├── handwriting (https://www.kaggle.com/datasets/phmnhnguyt/handwriting)
       │ ├── tensorboard
       │ │ └── tenserboard
       │ ├── train_gt
       │ │ └── train_gt.txt (FILE GIVEN LABEL)
       │ └── last_crnn.pt (MODEL)
-      └── handwritten-ocr "(https://www.kaggle.com/datasets/ldmkstn/handwritten-ocr)"
+      └── handwritten-ocr (https://www.kaggle.com/datasets/ldmkstn/handwritten-ocr)
       ├── public_test_data
       │ └── new_public_test (TEST DATASET)
       ├── training_data
