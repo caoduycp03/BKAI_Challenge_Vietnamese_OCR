@@ -4,7 +4,7 @@ import torch.nn as nn
 from OCRDataset import OCRDataset
 from torchvision.transforms import ToTensor, Resize, Compose, RandomAffine, ColorJitter
 from torch.utils.data import DataLoader
-from torch.utils.data import Subset
+from torch.utils.data import random_split
 from model import CRNN
 import itertools
 import numpy as np
@@ -53,13 +53,9 @@ if __name__ == '__main__':
     #split train/val dataset
     dataset = OCRDataset(root = root, max_label_len = max_label_len, train=True, transform=transform)
 
-    train_size = 0.8
-    validation_size = 1.0 - train_size
-    total_samples = len(dataset)
-    train_samples = int(train_size * total_samples)
-    validation_samples = total_samples - train_samples
-    train_dataset = Subset(dataset, range(train_samples))
-    val_dataset = Subset(dataset, range(train_samples, total_samples))
+    train_size = int(0.8 * len(dataset))
+    val_size = len(dataset) - train_size
+    train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
 
     train_dataloader = DataLoader(
         dataset=train_dataset,

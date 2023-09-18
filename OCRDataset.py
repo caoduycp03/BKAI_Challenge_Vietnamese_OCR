@@ -22,11 +22,14 @@ class OCRDataset(Dataset):
         if train:
             dir = os.path.join(root, 'new_train')
             paths = os.listdir(dir)
+            paths = sorted(paths, key=lambda x: int(x.split('_')[2].split('.')[0]))
             image_files = [os.path.join(dir, path) for path in paths]
             label_file = 'data\\train_gt.txt'
         else:
             dir = os.path.join(root, 'new_public_test')
             paths = os.listdir(dir)
+            paths = sorted(paths, key=lambda x: int(x.split('_')[3].split('.')[0]))
+            print(paths)
             image_files = [os.path.join(dir, path) for path in paths]
         
         self.images_path = image_files
@@ -77,17 +80,17 @@ if __name__ == '__main__':
     #     shuffle=True
     # )
     
-    ocr = OCRDataset(root = "data", max_label_len=32, train=True, transform=transform)
+    ocr = OCRDataset(root = "data", max_label_len=32, train=False, transform=transform)
     # print(len(ocr.char_list))
     # image, label, length = ocr.__getitem__(447)
     # print(image.shape)
     # print(label)
     # print(length)
 
-    print(ocr.char_list)
+    # print(ocr.char_list)
 
-    print(encode_to_num('tin-',char_list=ocr.char_list))
-    print(ocr.char_list[20])
+    # print(encode_to_num('tin-',char_list=ocr.char_list))
+    # print(ocr.char_list[20])
     # max_len = 0
     # for i in ocr.labels:
     #     if len(i) > max_len:
