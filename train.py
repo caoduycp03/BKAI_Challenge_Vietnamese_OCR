@@ -4,7 +4,7 @@ import torch.nn as nn
 from OCRDataset import OCRDataset
 from torchvision.transforms import ToTensor, Resize, Compose, RandomAffine, ColorJitter
 from torch.utils.data import DataLoader
-from torch.utils.data import random_split
+from torch.utils.data import Subset
 from model import CRNN
 import itertools
 import numpy as np
@@ -15,33 +15,6 @@ from torch.utils.tensorboard import SummaryWriter
 import shutil
 import warnings
 warnings.simplefilter("ignore")
-
-def words_from_labels(labels, char_list):
-    """
-    converts the list of encoded integer labels to word strings like eg. [12,10,29] returns CAT 
-    """
-    txt=[]
-    for ele in labels:
-        if ele == 0: # CTC blank space
-            txt.append("")
-        else:
-            #print(letters[ele])
-            txt.append(char_list[ele+1])
-    return "".join(txt)
-
-def decode_batch(test_func, word_batch): #take only a sequence once a time
-    """
-    Takes the Batch of Predictions and decodes the Predictions by Best Path Decoding and Returns the Output
-    """
-    out = test_func([word_batch])[0] #returns the predicted output matrix of the model
-    ret = []
-    for j in range(out.shape[0]):
-        out_best = list(np.argmax(out[j, :], 1))
-        out_best = [k for k, g in itertools.groupby(out_best)]
-        outstr = words_from_labels(out_best)
-        ret.append(outstr)
-    return ret
-
 
 if __name__ == '__main__':
     if torch.cuda.is_available():
@@ -79,9 +52,14 @@ if __name__ == '__main__':
 
     #split train/val dataset
     dataset = OCRDataset(root = root, max_label_len = max_label_len, train=True, transform=transform)
-    train_size = int(0.9 * len(dataset))
-    val_size = len(dataset) - train_size
-    train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
+
+    train_size = 0.8
+    validation_size = 1.0 - train_size
+    total_samples = len(dataset)
+    train_samples = int(train_size * total_samples)
+    validation_samples = total_samples - train_samples
+    train_dataset = Subset(dataset, range(train_samples))
+    val_dataset = Subset(dataset, range(train_samples, total_samples))
 
     train_dataloader = DataLoader(
         dataset=train_dataset,
@@ -117,7 +95,7 @@ if __name__ == '__main__':
         start_epoch = checkpoint['epoch']
         best_loss = checkpoint['best_loss']  
         model.load_state_dict(checkpoint["model"])
-        optimizer.load_state_dict(checkpoint["optimizer"])
+        optimizer.load_state_dict(checkpoint["optimizer"]) 
     else:
         start_epoch = 0  
     num_iters = len(train_dataloader)
@@ -143,8 +121,10 @@ if __name__ == '__main__':
             #backward
             loss_value.backward()  
             optimizer.step()
+        
         print(' Avg training loss', sum_loss/11587)
         model.eval()
+
         for iter, (images, padded_labels, label_lenghts) in enumerate(val_dataloader):
             images = images.to(device)
             padded_labels = padded_labels.to(device)

@@ -79,10 +79,15 @@ if __name__ == '__main__':
     
     ocr = OCRDataset(root = "data", max_label_len=32, train=True, transform=transform)
     # print(len(ocr.char_list))
-    image, label, length = ocr.__getitem__(447)
-    print(image.shape)
-    print(label)
-    print(length)
+    # image, label, length = ocr.__getitem__(447)
+    # print(image.shape)
+    # print(label)
+    # print(length)
+
+    print(ocr.char_list)
+
+    print(encode_to_num('tin-',char_list=ocr.char_list))
+    print(ocr.char_list[20])
     # max_len = 0
     # for i in ocr.labels:
     #     if len(i) > max_len:

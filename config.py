@@ -13,7 +13,7 @@ class ModelConfigs(BaseModelConfigs):
         self.max_label_len = 32
         self.epochs = 100        
         self.batch_size = 8
-        self.learning_rate = 0.001
+        self.learning_rate = 0.0001
         self.train_workers = 4
         self.logging = 'tensorboard'
         self.checkpoint = None
