@@ -140,10 +140,9 @@ if __name__ == '__main__':
     writer = SummaryWriter(logging)
 
     char_list = dataset.char_list
-    model = CRNN(num_classes=len(char_list)+1).to(device)
+    model = CRNN(time_steps=max_label_len, num_classes=len(char_list)+1).to(device)
     criterion = nn.CTCLoss(blank=0)
-    time_steps = max_label_len #time_steps(seq_len) must >= max_label_len but for simplicity, we use time_steps(seq_len) = max_label_len
-    output_lengths = torch.full(size=(batch_size,), fill_value=time_steps, dtype=torch.long)
+    output_lengths = torch.full(size=(batch_size,), fill_value=max_label_len, dtype=torch.long)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     
     # Initialize ReduceLROnPlateau scheduler
@@ -168,26 +167,25 @@ if __name__ == '__main__':
     for epoch in range(start_epoch, num_epochs):
         model.train()
         progress_bar = tqdm(train_dataloader, colour="green")
+        sum_loss = 0
         for iter, (images, padded_labels, label_lenghts) in enumerate(train_dataloader):
             images = augment_transform(images)
             images = images.to(device)
             padded_labels = padded_labels.to(device)
             #forward
+            optimizer.zero_grad()
             outputs = model(images)
 #Shape:     #output(sequence_length, batch_size, num_classes)
             #padded_labels(batch_size, max_label_len)
             #output_lengths, label_lenghts(batch_size)
             loss_value = criterion(outputs, padded_labels, output_lengths, label_lenghts)
-            if torch.isinf(loss_value):
-                print(outputs)
-                exit()
             progress_bar.set_description("Epoch {}/{}. Iteration {}/{}. Loss{:3f}".format(epoch+1, num_epochs, iter+1, num_iters, loss_value))
             writer.add_scalar("Train/Loss", loss_value, epoch*num_iters+iter)
+            sum_loss += loss_value
             #backward
-            optimizer.zero_grad()
             loss_value.backward()  
             optimizer.step()
-
+        print(' Avg training loss', sum_loss/11587)
         model.eval()
         for iter, (images, padded_labels, label_lenghts) in enumerate(val_dataloader):
             images = images.to(device)
