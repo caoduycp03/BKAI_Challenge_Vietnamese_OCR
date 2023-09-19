@@ -101,7 +101,7 @@ if __name__ == '__main__':
     if checkpoint:
         checkpoint = torch.load(checkpoint)
         start_epoch = checkpoint['epoch']
-        best_cer = checkpoint['best_cer']  
+        best_cer = checkpoint['best_loss']  
         model.load_state_dict(checkpoint["model"])
         optimizer.load_state_dict(checkpoint["optimizer"]) 
     else:
@@ -135,8 +135,10 @@ if __name__ == '__main__':
             #backward
             loss_value.backward()  
             optimizer.step()
-        print(' Avg training loss', sum_loss/len(train_dataset))
+        print(' Avg training loss', sum_loss/(len(train_dataset)//batch_size))
 
+        sum_loss = 0
+        cer_value = 0
         model.eval()
         for iter, (images, padded_labels, label_lenghts) in enumerate(val_dataloader):
             images = images.to(device)
@@ -146,7 +148,10 @@ if __name__ == '__main__':
                 loss_value = criterion(predictions, padded_labels, output_lengths, label_lenghts)
                 decoded_preds = ctc_decoder(outputs.cpu().permute(1,0,2).detach().numpy(),char_list)
                 labels = [decode_padded_label(padded_labels[i].cpu().numpy(), char_list, label_lenghts[i].numpy()) for i in range(padded_labels.shape[0])]
-                cer_value = get_cer(decoded_preds, labels)
+                sum_loss += loss_value
+                cer_value += get_cer(decoded_preds, labels)
+        loss_value = sum_loss/(len(val_dataset)//batch_size)
+        cer_value = cer_value/(len(val_dataset)//batch_size)
         writer.add_scalar("Val/CER", cer_value, epoch)
         checkpoint = {
             "epoch": epoch + 1,

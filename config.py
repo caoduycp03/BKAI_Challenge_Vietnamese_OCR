@@ -16,4 +16,4 @@ class ModelConfigs(BaseModelConfigs):
         self.learning_rate = 0.0001
         self.train_workers = 4
         self.logging = 'tensorboard'
-        self.checkpoint = None
+        self.checkpoint = 'trained_model\last_crnn.pt'
