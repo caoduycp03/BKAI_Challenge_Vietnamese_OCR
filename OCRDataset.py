@@ -1,5 +1,5 @@
 from torch.utils.data import Dataset, DataLoader
-from tensorflow.keras.preprocessing.sequence import pad_sequences
+from keras_preprocessing.sequence import pad_sequences
 from torchvision.transforms import ToTensor, Resize, Compose
 import torchvision.transforms.functional as F
 import os
@@ -29,7 +29,6 @@ class OCRDataset(Dataset):
             dir = os.path.join(root, 'new_public_test')
             paths = os.listdir(dir)
             paths = sorted(paths, key=lambda x: int(x.split('_')[3].split('.')[0]))
-            print(paths)
             image_files = [os.path.join(dir, path) for path in paths]
         
         self.images_path = image_files
@@ -80,12 +79,13 @@ if __name__ == '__main__':
     #     shuffle=True
     # )
     
-    ocr = OCRDataset(root = "data", max_label_len=32, train=False, transform=transform)
+    ocr = OCRDataset(root = "data", max_label_len=32, train=True, transform=None)
+
     # print(len(ocr.char_list))
-    # image, label, length = ocr.__getitem__(447)
-    # print(image.shape)
-    # print(label)
-    # print(length)
+    image, label, length = ocr.__getitem__(237)
+    image.show()
+    print(label)
+    print(length)
 
     # print(ocr.char_list)
 

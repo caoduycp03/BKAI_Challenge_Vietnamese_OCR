@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import torch.nn.init as init
-from torchsummary import summary
 
 class CRNN(nn.Module):
     def __init__(self, num_classes, drop_out_rate = 0.35):
