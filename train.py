@@ -25,9 +25,9 @@ def decode_padded_label(padded_label, char_list, label_length):
         decoded_label.append(token)
         
     decoded_label = ''.join(decoded_label)
-
     
     return decoded_label
+
 if __name__ == '__main__':
     if torch.cuda.is_available():
         device = torch.device("cuda")
@@ -81,8 +81,8 @@ if __name__ == '__main__':
         dataset=val_dataset,
         batch_size=batch_size,
         num_workers=train_workers,
-        drop_last=False,
-        shuffle=False
+        drop_last=True,
+        shuffle=True
     )
 
     if not os.path.isdir(logging):
