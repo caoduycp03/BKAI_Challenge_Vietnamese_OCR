@@ -19,3 +19,4 @@ BKAI-NAVER 2023 - Track 2: OCR
 
 #### [handwriting](https://www.kaggle.com/datasets/phmnhnguyt/handwriting/)
 #### [handwritten-ocr](https://www.kaggle.com/datasets/ldmkstn/handwritten-ocr/)
+#### [Reference of Early Stopping](https://github.com/Bjarten/early-stopping-pytorch/blob/master/MNIST_Early_Stopping_example.ipynb)
