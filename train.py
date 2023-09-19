@@ -101,7 +101,7 @@ if __name__ == '__main__':
     if checkpoint:
         checkpoint = torch.load(checkpoint)
         start_epoch = checkpoint['epoch']
-        best_cer = checkpoint['best_loss']  
+        best_cer = checkpoint['best_cer']  
         model.load_state_dict(checkpoint["model"])
         optimizer.load_state_dict(checkpoint["optimizer"]) 
     else:
