@@ -64,6 +64,9 @@ if __name__ == '__main__':
 
     #split train/val dataset
     dataset = OCRDataset(root = root, max_label_len = max_label_len, train=True, transform=transform)
+    
+    # Set the random seed
+    torch.manual_seed(42)
 
     train_size = int(0.9 * len(dataset))
     val_size = len(dataset) - train_size
@@ -116,7 +119,7 @@ if __name__ == '__main__':
         model.train()
         progress_bar = tqdm(train_dataloader, colour="green")
         sum_loss = 0
-        for iter, (images, padded_labels, label_lenghts) in enumerate(train_dataloader):
+        for iter, (images, padded_labels, label_lenghts) in enumerate(progress_bar):
             images = augment_transform(images)
             images = images.to(device)
             padded_labels = padded_labels.to(device)
@@ -173,7 +176,7 @@ if __name__ == '__main__':
 
         print(' Validate-Cer value:', cer_value)
         print(' AVG Loss Value', loss_value)
-        early_stopping(cer_value, model)
+        early_stopping(loss_value, model)
         if early_stopping.early_stop:
             print("Early stopping")
             break
