@@ -53,7 +53,7 @@ if __name__ == '__main__':
          ])
     
     augment_transform= Compose([RandomAffine(
-                                            degrees=(-5, 5),
+                                            degrees=(-3, 3),
                                             scale=(0.8, 1.05), 
                                             shear=8),
                                 ColorJitter(
@@ -66,7 +66,7 @@ if __name__ == '__main__':
     dataset = OCRDataset(root = root, max_label_len = max_label_len, train=True, transform=transform)
     
     # Set the random seed
-    torch.manual_seed(42)
+    torch.manual_seed(43)
 
     train_size = int(0.9 * len(dataset))
     val_size = len(dataset) - train_size
