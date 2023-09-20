@@ -54,8 +54,8 @@ if __name__ == '__main__':
     
     augment_transform= Compose([RandomAffine(
                                             degrees=(-5, 5),
-                                            scale=(0.5, 1.05), 
-                                            shear=10),
+                                            scale=(0.8, 1.05), 
+                                            shear=8),
                                 ColorJitter(
                                             brightness=0.5, 
                                             contrast=0.5,
@@ -109,7 +109,7 @@ if __name__ == '__main__':
     num_iters = len(train_dataloader)
     
     #set early stopping
-    early_stopping = EarlyStopping(patience=10, path='{}/best_loss.pt'.format(trained_models))
+    early_stopping = EarlyStopping(patience=30, path='{}/best_loss.pt'.format(trained_models))
 
     #start training and validating
     for epoch in range(start_epoch, num_epochs):
@@ -172,8 +172,8 @@ if __name__ == '__main__':
             torch.save(checkpoint, "{}/best_cer.pt".format(trained_models))
 
         print(' Validate-Cer value:', cer_value)
-
-        early_stopping(loss_value, model)
+        print(' AVG Loss Value', loss_value)
+        early_stopping(cer_value, model)
         if early_stopping.early_stop:
             print("Early stopping")
             break
