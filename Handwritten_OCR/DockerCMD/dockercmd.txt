@@ -1,0 +1,10 @@
+1. build docker:
+
+docker build -f Dockerfile -t bkai:test_docker .
+
+2. check nvida:
+
+docker run -ti bkai:test_docker nvida-smi
+
+Run training:
+

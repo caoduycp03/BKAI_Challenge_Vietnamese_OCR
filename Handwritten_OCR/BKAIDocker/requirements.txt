@@ -1,0 +1,12 @@
+torch==1.13.1
+torchvision==0.14.1
+torchaudio==0.13.1
+opencv-python
+mltu==1.0.9
+torchsummary==1.5.1
+numpy==1.21.6
+Pillow==9.4.0
+keras==2.11.0
+Keras-Applications==1.0.8
+tqdm==4.65.0
+keras_preprocessing
